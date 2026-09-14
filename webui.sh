@@ -12,8 +12,13 @@ export PYTHONPATH="$CURRENT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 # 0.0.0.0 只能表示“监听所有网卡”，不适合作为浏览器访问地址。
 # macOS/Linux 下浏览器打开 http://0.0.0.0:8501 可能会经过代理或网关，
-# 最终出现 502。默认绑定并打开 127.0.0.1，与 Windows 启动脚本保持一致。
-MPT_WEBUI_HOST="${MPT_WEBUI_HOST:-127.0.0.1}"
+# 最终出现 502。Codespaces 的端口转发需要从所有网卡访问，因此使用 0.0.0.0。
+if [ -n "${CODESPACES:-}" ] || [ -n "${CODESPACE_NAME:-}" ]; then
+  MPT_DEFAULT_WEBUI_HOST=0.0.0.0
+else
+  MPT_DEFAULT_WEBUI_HOST=127.0.0.1
+fi
+MPT_WEBUI_HOST="${MPT_WEBUI_HOST:-$MPT_DEFAULT_WEBUI_HOST}"
 MPT_WEBUI_PORT="${MPT_WEBUI_PORT:-8501}"
 
 if [ -x "$CURRENT_DIR/.venv/bin/python" ]; then
